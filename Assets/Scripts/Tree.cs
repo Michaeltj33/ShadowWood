@@ -114,8 +114,7 @@ public class Tree : MonoBehaviour
         }
 
         waitingTime = getWaitingTime;
-        view.RPC("SetAnimator", RpcTarget.AllBuffered, "direction", 1);
-
+        view.RPC("SetAnimator", RpcTarget.AllBuffered, "direction", 1);       
 
         if (usedmagic)
         {

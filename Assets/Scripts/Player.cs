@@ -213,11 +213,14 @@ public class Player : MonoBehaviour
 
             if (!wallColision)
             {
+                //Utilizadnos habilidades
                 if ((Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space)) && !usingMagic)
                 {
 
-                    if (SelectedHability == 0)
+
+                    if (SelectedHability == 0 && !PainelTimeControl.instance.timeControls[SelectedHability].GetActive())
                     {
+                        PainelTimeControl.instance.timeControls[SelectedHability].SetActiveTime();
                         if (!visible)
                         {
                             SetInvisible();
@@ -225,8 +228,9 @@ public class Player : MonoBehaviour
                         usingMagic = true;
                         AnimatorActiveOnceInt("direction", 2);
                     }
-                    else if (SelectedHability == 1)
+                    else if (SelectedHability == 1 && !PainelTimeControl.instance.timeControls[SelectedHability].GetActive())
                     {
+                        PainelTimeControl.instance.timeControls[SelectedHability].SetActiveTime();
                         if (!visible)
                         {
                             SetInvisible();
@@ -234,15 +238,18 @@ public class Player : MonoBehaviour
                         usingMagic = true;
                         AnimatorActiveOnceInt("direction", 3);
                     }
-                    else if (SelectedHability == 3)
+                    else if (SelectedHability == 3 && animator.GetInteger("direction") == 0 && !PainelTimeControl.instance.timeControls[SelectedHability].GetActive())
                     {
+                        PainelTimeControl.instance.timeControls[SelectedHability].SetActiveTime();
                         usingMagic = true;
                         animator.SetTrigger("visible");
                     }
 
+
+
                 }
 
-                if (SelectedHability == 2 && animator.GetInteger("direction") == 0)
+                if (SelectedHability == 2 && animator.GetInteger("direction") == 0 && !PainelTimeControl.instance.timeControls[SelectedHability].GetActive())
                 {
                     if (!visible)
                     {
@@ -258,6 +265,7 @@ public class Player : MonoBehaviour
 
                     if (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.Space))
                     {
+                        PainelTimeControl.instance.timeControls[SelectedHability].SetActiveTime();
                         AnimatorActiveOnceInt("direction", 0);
                         speed = getSpeed;
                         protection = false;
@@ -523,24 +531,28 @@ public class Player : MonoBehaviour
     [PunRPC]
     public void DropItemDead()
     {
-        float posY = 1f;
-        float posX = 0.5f;
-        Vector2 vector2 = new Vector2(transform.position.x + (posX + 0.3f), transform.position.y - (posY + 0.3f));
-
-        int value;
-
-        for (int i = 0; i < SpawnUI.instance.GetPointQtn(); i++)
+        if (view.IsMine)
         {
-            value = SpawnUI.instance.GetPoint(i);
-            if (value == 0)
-            {
-                continue;
-            }
+            float posY = 1f;
+            float posX = 0.5f;
+            Vector2 vector2 = new Vector2(transform.position.x + (posX + 0.3f), transform.position.y - (posY + 0.3f));
 
-            // getSpriteDrops = SpawnUI.instance.GetPoint(i);
-            ControlerColect.instance.DropColectable(vector2, value, i, i);
-            SpawnUI.instance.Resetpainel(0, i);
+            int value;
+
+            for (int i = 0; i < SpawnUI.instance.GetPointQtn(); i++)
+            {
+                value = SpawnUI.instance.GetPoint(i);
+                if (value == 0)
+                {
+                    continue;
+                }
+
+                // getSpriteDrops = SpawnUI.instance.GetPoint(i);
+                ControlerColect.instance.DropColectable(vector2, value, i, i);
+                SpawnUI.instance.Resetpainel(0, i);
+            }
         }
+
     }
 
     [PunRPC]

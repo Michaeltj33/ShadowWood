@@ -14,6 +14,8 @@ public class Enemy : MonoBehaviour
 
     private bool visiblePlayer;
 
+    private bool isDeadPlayer;
+
     public GameObject bar;
     public Image barFillAmount;
 
@@ -40,6 +42,8 @@ public class Enemy : MonoBehaviour
     private int getSorteio;
 
     private bool attacking;
+    private Coroutine waitAttackCoroutine;
+
     private int getSpriteDrops;//icone do sprite do osso
 
     public bool VisiblePlayer
@@ -93,9 +97,18 @@ public class Enemy : MonoBehaviour
 
         if (!isDead)//apenas se o Inimigo estiver vivo
         {
-            if (player != null)
+            if (player != null)// && !isDeadPlayer
             {
+                isDeadPlayer = player.GetComponent<Player>().GetisDead();
                 visiblePlayer = player.GetComponent<Player>().GetVisible();
+
+                if (isDeadPlayer)
+                {
+                    player = null;
+                    // StopCoroutine(waitAttackCoroutine);
+                    return;
+                }
+
                 if (visiblePlayer)
                 {
                     navMeshAgent.SetDestination(player.transform.position);
@@ -105,7 +118,7 @@ public class Enemy : MonoBehaviour
                         attacking = true;
 
                         //Chegou perto do Player
-                        StartCoroutine(WaitAttack(WaitSecondAttack));
+                       waitAttackCoroutine = StartCoroutine(WaitAttack(WaitSecondAttack));                       
                     }
                     else
                     {
@@ -163,6 +176,7 @@ public class Enemy : MonoBehaviour
                         }
                         //seguindo para o Local inicial
                         AnimatorActiveOnceInt("direction", 1);
+                        isDeadPlayer = false;
                     }
                 }
 
@@ -257,7 +271,7 @@ public class Enemy : MonoBehaviour
         {
             animator.SetTrigger("hurt");
             RemoveBar(5);
-        }      
+        }
     }
 
     public void SetAudio(int value)
